@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>COMMITREEL — Time Travel Debugger</title>
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <div class="app">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-left">
+          <div class="logo">
+            <img src="/logo.png" alt="COMMITREEL" class="logo-img" />
+            <span class="logo-text">COMMITREEL</span>
+          </div>
+          <div class="header-divider"></div>
+          <div class="tape-info">
+            <span class="tape-name" id="tape-name">commitreel-demo.mv2</span>
+            <span class="tape-badge">
+              <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm3.5 5.5l-4 4-2-2 1-1 1 1 3-3 1 1z"/></svg>
+              Verified
+            </span>
+          </div>
+        </div>
+        <div class="header-center">
+          <div class="transport">
+            <button class="transport-btn" id="btn-prev" title="Previous (←)">
+              <svg viewBox="0 0 16 16" fill="currentColor"><path d="M10 12L4 8l6-4v8z"/></svg>
+            </button>
+            <button class="transport-btn primary" id="btn-play" title="Run (Enter)">
+              <svg viewBox="0 0 16 16" fill="currentColor"><path d="M4 2l10 6-10 6V2z"/></svg>
+            </button>
+            <button class="transport-btn" id="btn-stop" title="Stop (Esc)">
+              <svg viewBox="0 0 16 16" fill="currentColor"><rect x="3" y="3" width="10" height="10" rx="1"/></svg>
+            </button>
+            <button class="transport-btn" id="btn-next" title="Next (→)">
+              <svg viewBox="0 0 16 16" fill="currentColor"><path d="M6 4l6 4-6 4V4z"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="env-pills">
+            <span class="pill"><span class="pill-label">Node</span> v20.11</span>
+            <span class="pill"><span class="pill-label">Frames</span> <span id="frame-count">0</span></span>
+          </div>
+          <button class="btn-icon" id="btn-assistant" title="AI Assistant">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1C4.1 1 1 3.6 1 7c0 1.4.5 2.7 1.4 3.7-.2 1.2-.7 2.2-1.3 2.9 1.5 0 2.8-.5 3.8-1.2.7.2 1.4.3 2.1.3 3.9 0 7-2.6 7-6S11.9 1 8 1z"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <main class="main">
+        <!-- Left Panel: Checkpoint Inspector -->
+        <section class="panel panel-inspector">
+          <div class="panel-header">
+            <h2 class="panel-title">Checkpoint</h2>
+            <div class="checkpoint-id" id="checkpoint-id">—</div>
+          </div>
+          <div class="panel-body" id="inspector-content">
+            <div class="empty-state">
+              <div class="empty-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="12 6 12 12 16 14"/>
+                </svg>
+              </div>
+              <p class="empty-text">Select a checkpoint from the timeline</p>
+            </div>
+          </div>
+          <div class="panel-footer">
+            <button class="btn btn-primary" id="run-btn" disabled>
+              <svg viewBox="0 0 16 16" fill="currentColor"><path d="M4 2l10 6-10 6V2z"/></svg>
+              Run This Moment
+            </button>
+          </div>
+        </section>
+
+        <!-- Center Panel: Logs -->
+        <section class="panel panel-logs">
+          <div class="panel-header">
+            <div class="tabs">
+              <button class="tab active" data-tab="stdout">Output</button>
+              <button class="tab" data-tab="stderr">Errors</button>
+              <button class="tab" data-tab="diff">Diff</button>
+            </div>
+            <div class="panel-actions">
+              <span class="log-count" id="log-count">0 lines</span>
+              <button class="btn-icon small" id="clear-logs" title="Clear">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M5 4V3a1 1 0 011-1h4a1 1 0 011 1v1M6 7v5M10 7v5"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="panel-body logs-body">
+            <div class="tab-content active" id="tab-stdout">
+              <pre class="logs" id="logs"><span class="log-placeholder">Run a checkpoint to see output...</span></pre>
+            </div>
+            <div class="tab-content" id="tab-stderr">
+              <pre class="logs" id="stderr"><span class="log-placeholder">No errors.</span></pre>
+            </div>
+            <div class="tab-content" id="tab-diff">
+              <div class="diff-header" id="diff-header"></div>
+              <pre class="diff" id="diff-content"></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- Right Panel: Files & Blame -->
+        <section class="panel panel-blame">
+          <div class="panel-header">
+            <h2 class="panel-title">Changed Files</h2>
+            <span class="file-count" id="file-count">0 files</span>
+          </div>
+          <div class="files-list" id="files-list">
+            <div class="empty-state small">
+              <p class="empty-text">No files to show</p>
+            </div>
+          </div>
+          <div class="blame-section">
+            <div class="blame-header">
+              <span class="blame-file" id="blame-file">—</span>
+              <span class="blame-lines" id="blame-lines">0 lines</span>
+            </div>
+            <pre class="blame-content" id="blame-content">Select a file to view blame</pre>
+          </div>
+        </section>
+      </main>
+
+      <!-- Timeline -->
+      <footer class="timeline">
+        <div class="timeline-header">
+          <div class="timeline-title">
+            <svg viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="4" width="14" height="8" rx="1" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="5" cy="8" r="2"/><circle cx="11" cy="8" r="2"/></svg>
+            Timeline
+          </div>
+          <div class="timeline-search">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="4"/><path d="M10 10l3 3"/></svg>
+            <input type="text" placeholder="Filter..." id="search" />
+          </div>
+          <div class="timeline-counter">
+            <span id="current-frame">0</span> / <span id="total-frames">0</span>
+          </div>
+        </div>
+        <div class="timeline-track-wrapper">
+          <div class="timeline-track" id="timeline">
+            <div class="playhead" id="playhead"></div>
+            <!-- Cards injected here -->
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <!-- AI Assistant Drawer -->
+    <div class="drawer" id="assistant-drawer">
+      <div class="drawer-header">
+        <h3 class="drawer-title">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1C4.1 1 1 3.6 1 7c0 1.4.5 2.7 1.4 3.7-.2 1.2-.7 2.2-1.3 2.9 1.5 0 2.8-.5 3.8-1.2.7.2 1.4.3 2.1.3 3.9 0 7-2.6 7-6S11.9 1 8 1z"/></svg>
+          AI Assistant
+        </h3>
+        <button class="btn-icon small" id="close-drawer">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+        </button>
+      </div>
+      <div class="drawer-context">
+        <label>Context</label>
+        <select id="assistant-context">
+          <option value="">All checkpoints</option>
+        </select>
+      </div>
+      <div class="drawer-messages" id="assistant-messages">
+        <div class="assistant-welcome">
+          <p>Ask questions about this checkpoint, changes, or debug issues.</p>
+        </div>
+      </div>
+      <div class="drawer-input">
+        <textarea id="assistant-input" placeholder="Ask about changes..." rows="1"></textarea>
+        <button class="btn btn-primary btn-send" id="assistant-send" disabled>
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M1 8l7-7v5h7v4H8v5L1 8z" transform="rotate(-90 8 8)"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="drawer-overlay" id="drawer-overlay"></div>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,52 @@
+{
+  "name": "commitreel",
+  "version": "0.1.0",
+  "description": "Time-travel tape for git checkpoints. Record, replay, and run any moment.",
+  "main": "./src/index.js",
+  "bin": {
+    "commitreel": "./bin/commitreel.js"
+  },
+  "author": "Memvid <contact@memvid.com>",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/memvid/commitreel.git",
+    "directory": "commitreel"
+  },
+  "homepage": "https://github.com/memvid/commitreel",
+  "bugs": {
+    "url": "https://github.com/memvid/commitreel/issues"
+  },
+  "keywords": [
+    "replit",
+    "checkpoints",
+    "time-travel",
+    "replay",
+    "git",
+    "debugging",
+    "mv2",
+    "memvid",
+    "timeline",
+    "devtools"
+  ],
+  "files": [
+    "bin/",
+    "src/",
+    "logo.png",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node ./bin/commitreel.js start --web",
+    "dev": "node ./bin/commitreel.js start --web --verbose"
+  },
+  "dependencies": {
+    "@memvid/sdk": "^2.0.122",
+    "chokidar": "^3.6.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  }
+}
